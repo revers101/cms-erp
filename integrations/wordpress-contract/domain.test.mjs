@@ -1,0 +1,20 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {calculateLines,assertTransition,assertVersion,optionalReference} from './domain.mjs';
+const line=(unit_cents=1995,quantity_milli=1000)=>({description:'Synthetic test item',unit_cents,quantity_milli});
+test('quote: 1.5 hours at EUR60 plus two EUR19.95 items = EUR129.90',()=>assert.equal(calculateLines([line(6000,1500),line(1995,2000)]).total_cents,12990));
+test('half cents rounded half-up per line',()=>assert.equal(calculateLines([line(1,500),line(1,500)]).total_cents,2));
+test('caller supplied totals are recalculated',()=>assert.equal(calculateLines([{...line(),total_cents:1}]).total_cents,1995));
+test('empty materials are valid',()=>assert.deepEqual(calculateLines([]),{lines:[],total_cents:0}));
+test('negative, fractional and unsafe cents rejected',()=>{for(const cents of [-1,1.5,NaN,Infinity,100000001])assert.throws(()=>calculateLines([line(cents)]));});
+test('zero, null, fractional quantities rejected',()=>{for(const quantity of [0,null,0.5,1000001])assert.throws(()=>calculateLines([line(1,quantity)]));});
+test('malformed descriptions and unknown fields rejected',()=>{assert.throws(()=>calculateLines([{...line(),description:null}]));assert.throws(()=>calculateLines([{...line(),secret:'synthetic'}]));});
+test('record and total limits enforced',()=>{assert.throws(()=>calculateLines(Array.from({length:101},()=>line())));assert.throws(()=>calculateLines([line(100000000,1000000),line(1)]));});
+test('quote draft -> sent -> accepted',()=>{assert.equal(assertTransition('quote','draft','sent'),'sent');assert.equal(assertTransition('quote','sent','accepted'),'accepted');});
+test('quote rejects shortcut and reopening',()=>{assert.throws(()=>assertTransition('quote','draft','accepted'));assert.throws(()=>assertTransition('quote','accepted','draft'));});
+test('workorder planned -> active -> done',()=>{assertTransition('workorder','planned','active');assertTransition('workorder','active','done');});
+test('workorder cancellation and invalid shortcut',()=>{assertTransition('workorder','planned','cancelled');assertTransition('workorder','active','cancelled');assert.throws(()=>assertTransition('workorder','planned','done'));});
+test('same status is repeatable; unknown states denied',()=>{assertTransition('quote','sent','sent');assert.throws(()=>assertTransition('order','draft','sent'));assert.throws(()=>assertTransition('quote','toString','sent'));});
+test('stale version and omitted version denied',()=>{assertVersion(2,2);assert.throws(()=>assertVersion(1,2));assert.throws(()=>assertVersion(undefined,2));});
+test('optional reference: absent allowed, explicit null/zero denied',()=>{assert.equal(optionalReference(undefined),undefined);assert.equal(optionalReference(2),2);for(const value of [null,0,-1,'2',2.5])assert.throws(()=>optionalReference(value));});

@@ -1,0 +1,11 @@
+{
+  "checked_at": "2026-10-08T06:52:26Z",
+  "scope": ["modules/content-management"],
+  "runtime": "Node.js v24.19.0 on Windows",
+  "tests": 23,
+  "passed": 23,
+  "failed": 0,
+  "skipped": 0,
+  "test_command": "node --test modules/content-management/*.test.mjs",
+  "limits": "Module tests do not prove integration with the host application, GitHub Actions success, browser acceptance, deployment or production readiness."
+}

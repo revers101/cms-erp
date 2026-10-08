@@ -1,0 +1,20 @@
+{
+  "name": "cms-erp",
+  "version": "0.2.0",
+  "private": false,
+  "type": "module",
+  "license": "GPL-3.0-or-later",
+  "engines": {
+    "node": ">=24.19.0 <25"
+  },
+  "scripts": {
+    "start": "node src/server.mjs",
+    "test": "node --test test/*.test.mjs integrations/wordpress-contract/*.test.mjs modules/content-management/*.test.mjs modules/service-operations/*.test.mjs integrations/wordpress-import/*.test.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/node": "2.1.1",
+    "@modelcontextprotocol/server": "2.3.1",
+    "jose": "6.2.12",
+    "zod": "4.6.5"
+  }
+}

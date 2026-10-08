@@ -1,0 +1,34 @@
+name: CMS/ERP checks
+
+on:
+  push:
+    branches: [main, "integration/**", "codex/**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  node-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.20.0
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 11.25.0
+      - name: Install locked dependencies without lifecycle scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Run host, authentication, MCP, domain, CMS, service, HTTP and import tests
+        run: >-
+          node --test --test-concurrency=1 test/*.test.mjs
+          integrations/wordpress-contract/*.test.mjs
+          modules/content-management/*.test.mjs
+          modules/service-operations/*.test.mjs
+          integrations/wordpress-import/*.test.mjs

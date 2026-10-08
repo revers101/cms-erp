@@ -1,0 +1,23 @@
+✔ quote: 1.5 hours at EUR60 plus two EUR19.95 items = EUR129.90 (1.71951ms)
+✔ half cents rounded half-up per line (0.166984ms)
+✔ caller supplied totals are recalculated (0.118474ms)
+✔ empty materials are valid (0.636981ms)
+✔ negative, fractional and unsafe cents rejected (0.730863ms)
+✔ zero, null, fractional quantities rejected (0.345603ms)
+✔ malformed descriptions and unknown fields rejected (0.143744ms)
+✔ record and total limits enforced (0.250844ms)
+✔ quote draft -> sent -> accepted (0.197786ms)
+✔ quote rejects shortcut and reopening (0.278978ms)
+✔ workorder planned -> active -> done (0.130943ms)
+✔ workorder cancellation and invalid shortcut (0.191127ms)
+✔ same status is repeatable; unknown states denied (0.12974ms)
+✔ stale version and omitted version denied (0.168091ms)
+✔ optional reference: absent allowed, explicit null/zero denied (0.148719ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 112.102561

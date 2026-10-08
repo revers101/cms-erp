@@ -1,0 +1,191 @@
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Beheer · CMS/ERP</title>
+  <link rel="stylesheet" href="/assets/app.css">
+  <script type="module" src="/assets/admin.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/admin">CMS <span>ERP</span></a>
+    <nav aria-label="Hoofdnavigatie">
+      <a href="#content">Content</a>
+      <a href="#operations">ERP-data</a>
+      <a href="#erp-workflows">Werkstromen</a>
+      <a href="/">Website bekijken</a>
+    </nav>
+    <button id="logout-button" class="button-quiet" type="button">Uitloggen</button>
+  </header>
+  <main class="layout">
+    <section class="hero">
+      <p class="eyebrow">Beheeromgeving</p>
+      <h1>CMS &amp; ERP</h1>
+      <p id="welcome" aria-live="polite">Gegevens laden…</p>
+    </section>
+
+    <section id="content" class="panel" hidden>
+      <div class="section-heading">
+        <div><p class="eyebrow">Contentbeheer</p><h2>Pagina’s en artikelen</h2></div>
+        <button id="new-content" type="button" class="button-secondary">Nieuwe content</button>
+      </div>
+      <div class="content-grid">
+        <form id="content-form" class="form-grid">
+          <h3 id="content-form-title">Concept maken</h3>
+          <input type="hidden" name="id">
+          <input type="hidden" name="version">
+          <label>Type<select name="type"><option value="page">Pagina</option><option value="article">Artikel</option><option value="service">Dienst</option><option value="project">Project</option><option value="faq">FAQ</option></select></label>
+          <label>Titel<input name="title" maxlength="200" required></label>
+          <label>Slug<input name="slug" maxlength="160" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" required></label>
+          <label>Samenvatting<textarea name="summary" maxlength="500" rows="2"></textarea></label>
+          <label>Tekst (lege regel scheidt alinea’s)<textarea name="body" rows="8" required></textarea></label>
+          <label>SEO-titel<input name="seoTitle" maxlength="200"></label>
+          <label>SEO-beschrijving<input name="seoDescription" maxlength="320"></label>
+          <button type="submit">Concept opslaan</button>
+          <p id="content-message" class="message" role="status"></p>
+        </form>
+        <div>
+          <div class="list-toolbar"><h3>Inhoud</h3><button id="refresh-content" type="button" class="button-secondary">Verversen</button></div>
+          <div id="content-list" class="record-list" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="operations" class="panel" hidden>
+      <div class="section-heading">
+        <div><p class="eyebrow">Bedrijfsvoering</p><h2>ERP-administratie</h2></div>
+        <label class="compact-label">Gegevens<select id="entity-select">
+          <option value="customers">Klanten</option><option value="resources">Medewerkers</option>
+          <option value="products">Producten en voorraad</option><option value="quotes">Offertes</option>
+          <option value="workorders">Werkorders</option><option value="hours">Uren</option>
+          <option value="reservations">Voorraadreserveringen</option><option value="movements">Voorraadmutaties</option>
+          <option value="invoices">Facturen</option><option value="payments">Betalingen</option>
+          <option value="credits">Creditnota’s</option><option value="outbox">Boekhoud-outbox</option>
+          <option value="audit">Auditlog</option>
+        </select></label>
+      </div>
+      <p class="muted">Gegevens worden per pagina geladen. Financiële gegevens en de auditlog zijn alleen zichtbaar voor de daarvoor bevoegde rollen.</p>
+      <div class="list-toolbar">
+        <h3 id="entity-heading">Klanten</h3>
+        <div class="record-actions">
+          <button id="refresh-entity" type="button" class="button-secondary">Verversen</button>
+          <button id="export-bookkeeping" type="button" class="button-secondary" data-roles="admin,finance">Boekhoudgegevens downloaden</button>
+        </div>
+      </div>
+      <p id="entity-message" class="message" role="status" aria-live="polite"></p>
+      <div id="entity-list" class="record-list" aria-live="polite"></div>
+      <div class="pagination" aria-label="Paginering">
+        <button id="entity-prev" type="button" class="button-secondary" disabled>Vorige</button>
+        <span id="entity-page">Pagina 1</span>
+        <button id="entity-next" type="button" class="button-secondary" disabled>Volgende</button>
+      </div>
+    </section>
+
+    <section id="erp-workflows" class="panel" hidden>
+      <div class="section-heading">
+        <div><p class="eyebrow">Van aanvraag naar administratie</p><h2>ERP-werkstromen</h2></div>
+        <button id="refresh-references" type="button" class="button-secondary">Keuzelijsten verversen</button>
+      </div>
+      <p id="reference-status" class="muted" role="status" aria-live="polite">Keuzelijsten worden geladen…</p>
+      <div class="erp-create-grid">
+        <form id="customer-form" class="form-grid" data-roles="admin,planner">
+          <h3>Klant toevoegen</h3>
+          <label>Naam<input name="name" maxlength="200" required></label>
+          <label>Type<select name="type"><option value="b2b">Zakelijk</option><option value="b2c">Particulier</option></select></label>
+          <label>E-mail<input name="email" type="email" maxlength="254"></label>
+          <button type="submit">Klant opslaan</button><p class="message" role="status"></p>
+        </form>
+        <form id="product-form" class="form-grid" data-roles="admin,planner">
+          <h3>Product toevoegen</h3>
+          <label>Naam<input name="name" maxlength="200" required></label>
+          <label>Artikelnummer (SKU)<input name="sku" maxlength="80" required></label>
+          <label>Prijs per eenheid (EUR)<input name="price" inputmode="decimal" placeholder="0,00" required></label>
+          <label>Btw (%)<input name="vat" inputmode="decimal" value="21" required></label>
+          <label>Openingsvoorraad (stuks)<input name="stock" type="number" min="0" max="1000000" step="1" value="0" required></label>
+          <button type="submit">Product opslaan</button><p class="message" role="status"></p>
+        </form>
+        <form id="resource-form" class="form-grid" data-roles="admin,planner">
+          <h3>Medewerker planbaar maken</h3>
+          <label>Naam voor de planning<input name="name" maxlength="200" required></label>
+          <label>Monteuraccount<select name="technicianId" required><option value="">Monteur kiezen…</option></select></label>
+          <p class="muted">Alleen actieve accounts met de rol monteur zijn beschikbaar.</p>
+          <button type="submit">Medewerker toevoegen</button><p class="message" role="status"></p>
+        </form>
+        <form id="quote-form" class="form-grid" data-roles="admin,planner">
+          <h3>Offerte als concept</h3>
+          <label>Klant<select name="customerId" required><option value="">Klant kiezen…</option></select></label>
+          <label>Omschrijving<input name="description" maxlength="500" required></label>
+          <label>Product (optioneel)<select name="productId"><option value="">Geen productkoppeling</option></select></label>
+          <label>Prijs per eenheid (EUR)<input name="price" inputmode="decimal" placeholder="0,00" required></label>
+          <label>Aantal<input name="quantity" inputmode="decimal" value="1" required></label>
+          <label>Btw (%)<input name="vat" inputmode="decimal" value="21" required></label>
+          <button type="submit">Offerte opslaan</button><p class="message" role="status"></p>
+        </form>
+        <form id="workorder-form" class="form-grid" data-roles="admin,planner">
+          <h3>Geaccepteerde offerte omzetten</h3>
+          <label>Offerte<select name="quoteId" required><option value="">Offerte kiezen…</option></select></label>
+          <p class="muted">Er wordt een ongeplande werkorder gemaakt. Plan daarna medewerker en tijdvak.</p>
+          <button type="submit">Werkorder maken</button><p class="message" role="status"></p>
+        </form>
+        <form id="schedule-form" class="form-grid" data-roles="admin,planner">
+          <h3>Werkorder plannen</h3>
+          <label>Werkorder<select name="workorderId" required><option value="">Werkorder kiezen…</option></select></label>
+          <label>Medewerker<select name="resourceId" required><option value="">Medewerker kiezen…</option></select></label>
+          <label>Starttijd<input name="startAt" type="datetime-local" required></label>
+          <label>Eindtijd<input name="endAt" type="datetime-local" required></label>
+          <p class="muted" data-timezone></p>
+          <button type="submit">Planning opslaan</button><p class="message" role="status"></p>
+        </form>
+        <form id="hours-form" class="form-grid" data-roles="admin,planner,technician">
+          <h3>Uren registreren</h3>
+          <label>Actieve werkorder<select name="workorderId" required><option value="">Werkorder kiezen…</option></select></label>
+          <label>Datum<input name="date" type="date" required></label>
+          <label>Minuten<input name="minutes" type="number" min="1" max="1440" step="1" required></label>
+          <label>Toelichting<input name="note" maxlength="1000"></label>
+          <button type="submit">Uren opslaan</button><p class="message" role="status"></p>
+        </form>
+        <form id="inventory-form" class="form-grid" data-roles="admin,planner,technician">
+          <h3>Voorraad bij werkorder</h3>
+          <label>Werkorder<select name="workorderId" required><option value="">Werkorder kiezen…</option></select></label>
+          <label>Product<select name="productId" required><option value="">Product kiezen…</option></select></label>
+          <label>Handeling<select name="action" required><option value="reserve-inventory">Reserveren</option><option value="consume-inventory">Verbruiken</option><option value="release-inventory">Reservering vrijgeven</option></select></label>
+          <label>Aantal stuks<input name="quantity" type="number" min="1" max="1000000" step="1" required></label>
+          <button type="submit">Voorraad bijwerken</button><p class="message" role="status"></p>
+        </form>
+        <form id="stock-form" class="form-grid" data-roles="admin,planner">
+          <h3>Voorraad corrigeren</h3>
+          <label>Product<select name="productId" required><option value="">Product kiezen…</option></select></label>
+          <label>Verschil in stuks<input name="delta" type="number" min="-1000000" max="1000000" step="1" required></label>
+          <label>Reden<input name="reason" maxlength="500" required></label>
+          <button type="submit">Correctie vastleggen</button><p class="message" role="status"></p>
+        </form>
+        <form id="invoice-form" class="form-grid" data-roles="admin,finance">
+          <h3>Factuur uitreiken</h3>
+          <label>Geaccepteerde offerte<select name="quoteId" required><option value="">Offerte kiezen…</option></select></label>
+          <label>Vervaldatum<input name="dueDate" type="date" required></label>
+          <button type="submit">Factuur uitreiken</button><p class="muted">Een gekoppelde werkorder moet eerst afgerond zijn.</p><p class="message" role="status"></p>
+        </form>
+        <form id="payment-form" class="form-grid" data-roles="admin,finance">
+          <h3>Betaling registreren</h3>
+          <label>Factuur<select name="invoiceId" required><option value="">Factuur kiezen…</option></select></label>
+          <label>Bedrag (EUR)<input name="amount" inputmode="decimal" placeholder="0,00" required></label>
+          <label>Bank-/betalingsreferentie<input name="reference" maxlength="200" required></label>
+          <p class="muted">Dit registreert een bevestigde betaling; het incasseert geen geld.</p>
+          <button type="submit">Betaling vastleggen</button><p class="message" role="status"></p>
+        </form>
+        <form id="credit-form" class="form-grid" data-roles="admin,finance">
+          <h3>Creditnota uitreiken</h3>
+          <label>Factuur<select name="invoiceId" required><option value="">Factuur kiezen…</option></select></label>
+          <label>Bedrag (EUR)<input name="amount" inputmode="decimal" placeholder="0,00" required></label>
+          <label>Reden<input name="reason" maxlength="1000" required></label>
+          <p class="muted">Terugbetaling van al betaald geld verloopt via een aparte providerstroom.</p>
+          <button type="submit">Creditnota uitreiken</button><p class="message" role="status"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

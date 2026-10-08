@@ -1,0 +1,23 @@
+{
+  "checked_at": "2026-10-08T06:34:49Z",
+  "scope": [
+    "integrations/wordpress-contract",
+    "integrations/wordpress-import",
+    "modules/service-operations"
+  ],
+  "source_bundle_sha256": "cb9c7a7702656866e51e58206ad75c813b2e0f932b33d9c2c5989c19c48dc01c",
+  "secret_pattern_scan": "PASS; basic patterns only, not a universal guarantee",
+  "runtime": "Node.js v24.19.0 on Windows",
+  "tests": 81,
+  "passed": 81,
+  "failed": 0,
+  "skipped": 0,
+  "test_command": "node --test integrations/wordpress-contract/domain.test.mjs modules/service-operations/*.test.mjs integrations/wordpress-import/*.test.mjs",
+  "additional_checks": [
+    "node --check modules/service-operations/engine.mjs",
+    "node --check modules/service-operations/http.mjs",
+    "node --check integrations/wordpress-import/planner.mjs",
+    "git diff --check"
+  ],
+  "limits": "Local module tests do not prove core-app integration, GitHub Actions success, browser acceptance, deployment or production readiness. GitHub Actions has not yet run for this branch."
+}
